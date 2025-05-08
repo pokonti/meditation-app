@@ -14,10 +14,10 @@ final class DiaryViewModel: ObservableObject {
         // Example initial entry
         entries = [
             DiaryEntry(
-                title: "Paw Prints Through Périgueux",
-                content: "What an enchanting day in Périgueux! The cobblestone streets whispered ancient tales …",
-                date: Calendar.current.date(from: DateComponents(year: 2025, month: 1, day: 21))!,
-                mood: 3
+                title: "Keremet kun",
+                content: "What an enchanting day in Almaty! The weather is awesome …",
+                date: Calendar.current.date(from: DateComponents(year: 2025, month: 5, day: 1))!,
+                mood: 4
             )
         ]
     }

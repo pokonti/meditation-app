@@ -18,7 +18,7 @@ class ViewModel: ObservableObject {
         // Mock data
         let meditations = [
             Meditation(id: "1", title: "Focus Attention", duration: "10 MIN", audioURL: "https://samplelib.com/lib/preview/mp3/sample-3s.mp3"),
-            Meditation(id: "2", title: "Body Scan", duration: "5 MIN", audioURL: "https://samplelib.com/lib/preview/mp3/sample-3s.mp3"),
+            Meditation(id: "2", title: "Body Scan", duration: "5 MIN", audioURL: "https://mprdtlzujmldbvhl.public.blob.vercel-storage.com/2_meditation-MXEJB1HJGJ1xl4Kzqsjf66UsCakATC.mp3"),
             Meditation(id: "3", title: "Making Happiness", duration: "3 MIN", audioURL: "https://samplelib.com/lib/preview/mp3/sample-3s.mp3")
         ]
         

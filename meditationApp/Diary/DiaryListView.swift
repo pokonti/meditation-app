@@ -81,7 +81,7 @@ struct DiaryListView: View {
                         .font(.title2)
                         .foregroundColor(.white)
                         .padding()
-                        .background(Color.purple)
+                        .background(.siren)
                         .clipShape(Circle())
                         .shadow(radius: 4)
                 }

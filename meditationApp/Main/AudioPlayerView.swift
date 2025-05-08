@@ -50,7 +50,7 @@ struct AudioPlayerView: View {
                 }) {
                     Image(systemName: audioPlayer.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: 50))
-                        .foregroundColor(Color("#8A8AFF"))
+                        .foregroundColor(.siren)
                 }
                 
                 Button(action: {

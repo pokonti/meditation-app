@@ -50,7 +50,7 @@ struct MainView: View {
                         .tabItem { Image(systemName: "person"); Text("Me") }
                         .tag(4)
                 }
-                .accentColor(.purple)
+                .accentColor(.siren)
             } else {
                 LoginView(authVM: authVM)
             }

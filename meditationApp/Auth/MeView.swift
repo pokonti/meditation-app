@@ -18,7 +18,7 @@ struct MeView: View {
                     .font(.title2).bold()
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity, minHeight: 100)
-                    .background(Color.purple)
+                    .background(.siren)
                     .cornerRadius(0)
                 
                 // — Список опций
@@ -43,7 +43,7 @@ struct MeView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .background(Color.white)
+                .background(.white)
                 .cornerRadius(8)
                 .padding(.top, 16)
                 .padding(.horizontal)
