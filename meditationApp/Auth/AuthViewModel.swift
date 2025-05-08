@@ -6,23 +6,19 @@
 //
 import Foundation
 import FirebaseAuth
-import Combine
 
+@MainActor
 final class AuthViewModel: ObservableObject {
-    @Published var isLoggedIn: Bool
-    @Published var errorMessage: String?
+    @Published var isLoggedIn: Bool = false
     @Published var userName: String = ""
+    @Published var errorMessage: String?
 
     private var handle: AuthStateDidChangeListenerHandle?
 
     init() {
-        let current = Auth.auth().currentUser
-        self.isLoggedIn = (current != nil)
-        self.userName = current?.displayName ?? ""
-
         handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             self?.isLoggedIn = (user != nil)
-            self?.userName = user?.displayName ?? ""
+            self?.userName   = user?.displayName ?? ""
         }
     }
 
@@ -32,58 +28,33 @@ final class AuthViewModel: ObservableObject {
         }
     }
 
-    func register(name: String, email: String, password: String) {
-        Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    self?.errorMessage = error.localizedDescription
-                }
-                return
-            }
-            guard let user = result?.user else { return }
-
-            // устанавливаем displayName
-            let changeReq = user.createProfileChangeRequest()
+    func register(name: String, email: String, password: String) async {
+        do {
+            let result = try await Auth.auth().createUser(withEmail: email, password: password)
+            let changeReq = result.user.createProfileChangeRequest()
             changeReq.displayName = name
-            changeReq.commitChanges { [weak self] err in
-                if let err = err {
-                    DispatchQueue.main.async {
-                        self?.errorMessage = err.localizedDescription
-                    }
-                } else {
-                    // сразу обновляем Published-свойство
-                    DispatchQueue.main.async {
-                        self?.userName = name
-                    }
-                }
-            }
+            try await changeReq.commitChanges()
+            // AuthState listener автоматически обновит isLoggedIn и userName
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 
-    func login(email: String, password: String) {
-        Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    self?.errorMessage = error.localizedDescription
-                }
-            } else {
-                // при входе listener подтянет displayName
-                print("✅ Залогинен:", result?.user.uid ?? "")
-            }
+    func login(email: String, password: String) async {
+        do {
+            _ = try await Auth.auth().signIn(withEmail: email, password: password)
+            // AuthState listener обновит isLoggedIn
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 
     func logout() {
         do {
             try Auth.auth().signOut()
-            DispatchQueue.main.async {
-                self.isLoggedIn = false
-                self.userName = ""
-            }
+            // AuthState listener сбросит isLoggedIn и userName
         } catch {
-            DispatchQueue.main.async {
-                self.errorMessage = error.localizedDescription
-            }
+            errorMessage = error.localizedDescription
         }
     }
 }

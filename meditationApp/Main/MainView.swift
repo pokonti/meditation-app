@@ -9,52 +9,39 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject var viewModel: ViewModel
-    @StateObject var authVM: AuthViewModel
-    @StateObject var diaryVM: DiaryViewModel
-    @StateObject var audioPlayer: AudioPlayerManager
-    let router: MeditationRouter
+    @ObservedObject var viewModel: ViewModel
+    @ObservedObject var authVM: AuthViewModel
+    @ObservedObject var diaryVM: DiaryViewModel
+    @ObservedObject var audioPlayer: AudioPlayerManager
+    @EnvironmentObject var router: AppRouter
     @State private var selectedTab = 0
 
     var body: some View {
-        Group {
-            if authVM.isLoggedIn {
-                TabView(selection: $selectedTab) {
-                    // Home tab
-                    HomeView(
-                        viewModel: viewModel,
-                        audioPlayer: audioPlayer,
-                        authVM: authVM,
-                        router: router
-                    )
-                    .tabItem {
-                        Image(systemName: "house.fill")
-                        Text("Home")
-                    }
-                    .tag(0)
+        TabView(selection: $selectedTab) {
+            HomeView(
+                viewModel: viewModel,
+                audioPlayer: audioPlayer,
+                authVM: authVM
+            )
+            .tabItem { Image(systemName: "house.fill"); Text("Home") }
+            .tag(0)
 
-                    // Other tabs...
-                    Text("Search")
-                        .tabItem { Image(systemName: "magnifyingglass"); Text("Search") }
-                        .tag(1)
+            Text("Search")
+                .tabItem { Image(systemName: "magnifyingglass"); Text("Search") }
+                .tag(1)
 
-                    Text("Favorites")
-                        .tabItem { Image(systemName: "heart"); Text("Favorites") }
-                        .tag(2)
+            Text("Favorites")
+                .tabItem { Image(systemName: "heart"); Text("Favorites") }
+                .tag(2)
 
-                    DiaryListView(viewModel: diaryVM)
-                        .tabItem { Image(systemName: "book"); Text("Diary") }
-                        .tag(3)
+            DiaryListView(viewModel: diaryVM)
+                .tabItem { Image(systemName: "book"); Text("Diary") }
+                .tag(3)
 
-                    MeView(authVM: authVM)
-                        .tabItem { Image(systemName: "person"); Text("Me") }
-                        .tag(4)
-                }
-                .accentColor(.siren)
-            } else {
-                LoginView(authVM: authVM)
-            }
+            MeView(authVM: authVM)
+                .tabItem { Image(systemName: "person"); Text("Me") }
+                .tag(4)
         }
-        .animation(.easeInOut, value: authVM.isLoggedIn)
+        .accentColor(.purple)
     }
 }

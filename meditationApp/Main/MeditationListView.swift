@@ -6,49 +6,54 @@
 //
 import SwiftUI
 
+struct MeditationRow: View {
+    let meditation: Meditation
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "play.circle.fill")
+                .font(.title2)
+                .foregroundColor(.blue)
+            
+            VStack(alignment: .leading) {
+                Text(meditation.title)
+                    .fontWeight(.medium)
+                Text(meditation.duration)
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            Spacer()
+        }
+        .padding(.vertical, 8)
+    }
+}
 struct MeditationListView: View {
     let course: MeditationCourse
     @ObservedObject var audioPlayer: AudioPlayerManager
-    let router: MeditationRouter
-
+    @EnvironmentObject var router: AppRouter
     @State private var showPlayer = false
 
     var body: some View {
         VStack(spacing: 0) {
-            // ───────────────────────────────────────────────────
-            // Custom Nav–Bar with Back Button
             HStack {
-                Button(action: {
+                Button {
                     router.goBack()
-                }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                      
-                    }
-                    .foregroundColor(.primary)
+                } label: {
+                    Image(systemName: "chevron.left").foregroundColor(.primary)
                 }
                 .padding(.leading, 16)
-
                 Spacer()
             }
             .padding(.vertical, 10)
-        
 
-            // ───────────────────────────────────────────────────
-            // List of Meditations
             List {
-                Section(header:
-                    Text(course.title)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding(.bottom, 8)
-                ) {
+                Section(header: Text(course.title).font(.largeTitle).bold().padding(.bottom, 8)) {
                     ForEach(course.meditations) { meditation in
-                        Button(action: {
+                        Button {
                             guard let url = URL(string: meditation.audioURL) else { return }
                             audioPlayer.play(url: url, title: meditation.title)
                             showPlayer = true
-                        }) {
+                        } label: {
                             MeditationRow(meditation: meditation)
                         }
                     }
@@ -56,8 +61,6 @@ struct MeditationListView: View {
             }
             .listStyle(PlainListStyle())
 
-            // ───────────────────────────────────────────────────
-            // Bottom Audio Player
             if showPlayer {
                 AudioPlayerView(audioPlayer: audioPlayer)
                     .transition(.move(edge: .bottom))

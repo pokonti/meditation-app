@@ -7,114 +7,87 @@
 
 import SwiftUI
 
-struct RegisterHeaderView: View {
-    private let logoImageName = "Logo"
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Text("Tynys")
-                .font(.title2)
-                .fontWeight(.medium)
-                .foregroundColor(.black)
-
-            Image(logoImageName)
-                .resizable()
-                .scaledToFit()
-                .frame(height: 32)
-
-            Text("Ber")
-                .font(.title2)
-                .fontWeight(.medium)
-                .foregroundColor(.black)
-        }
-        .padding(.top, 32)
-    }
-}
-
 struct RegisterView: View {
     @ObservedObject var authVM: AuthViewModel
-    @State private var name     = ""
-    @State private var email    = ""
-    @State private var password = ""
-    @Environment(\.presentationMode) private var presentationMode
+    @EnvironmentObject var router: AppRouter
 
-    // MARK: — Цветовая палитра
-    private let bgGradientStart = Color(red: 0.95, green: 0.97, blue: 1.0)
-    private let bgGradientEnd   = Color(red: 0.85, green: 0.76, blue: 0.98)
-    private let accentViolet    = Color(red: 0.65, green: 0.49, blue: 0.98)
+    @State private var name = ""
+    @State private var email = ""
+    @State private var password = ""
 
     var body: some View {
         ZStack {
             LinearGradient(
-                gradient: Gradient(colors: [bgGradientStart, bgGradientEnd]),
+                gradient: Gradient(colors: [
+                    Color(red: 0.60, green: 0.15, blue: 0.85),
+                    Color(red: 0.75, green: 0.40, blue: 0.90)
+                ]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
 
-            VStack(spacing: 24) {
-                RegisterHeaderView()
+            VStack(spacing: 32) {
+                Text("Create Account")
+                    .font(.largeTitle).bold()
+                    .foregroundColor(.white)
 
-                Spacer(minLength: 0)
                 VStack(spacing: 16) {
-                    Text("Register")
-                        .font(.largeTitle).bold()
-                        .foregroundColor(accentViolet)
+                    TextField("Your Name", text: $name)
+                        .autocapitalization(.words)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
 
-                    Group {
-                        TextField("Your Name", text: $name)
-                            .autocapitalization(.words)
-                        TextField("Email", text: $email)
-                            .keyboardType(.emailAddress)
-                            .autocapitalization(.none)
-                        SecureField("Password", text: $password)
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
+                    TextField("Email", text: $email)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+
+                    SecureField("Password", text: $password)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+
                     if let error = authVM.errorMessage {
                         Text(error)
                             .foregroundColor(.red)
-                            .multilineTextAlignment(.center)
-                            .onAppear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                                    authVM.errorMessage = nil
-                                }
-                            }
+                            .font(.caption)
                     }
 
-                    Button(action: {
-                        authVM.register(name: name, email: email, password: password)
-                    }) {
+                    Button {
+                        Task {
+                            await authVM.register(name: name, email: email, password: password)
+                            if authVM.isLoggedIn {
+                                router.showMain()
+                            }
+                        }
+                    } label: {
                         Text("Create Account")
-                            .font(.headline)
+                            .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(accentViolet)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
+                            .background(Color.white.opacity(0.3))
+                            .cornerRadius(10)
                     }
-                    Button("Уже есть аккаунт? Войти") {
-                        presentationMode.wrappedValue.dismiss()
-                    }
-                    .font(.footnote)
-                    .foregroundColor(accentViolet)
-                    .padding(.top, 4)
                 }
-                .padding(24)
-                .background(Color.white)
-                .cornerRadius(20)
-                .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
-                .padding(.horizontal, 16)
+                .padding()
+                .background(Color.white.opacity(0.2))
+                .cornerRadius(16)
+                .padding(.horizontal, 24)
 
-                Spacer(minLength: 0)
+                Button("Уже есть аккаунт? Войти") {
+                    router.showLogin()
+                }
+                .font(.footnote)
+                .foregroundColor(.white)
             }
+            .padding(.vertical, 40)
         }
-    }
-}
-
-struct RegisterView_Previews: PreviewProvider {
-    static var previews: some View {
-        RegisterView(authVM: AuthViewModel())
     }
 }
