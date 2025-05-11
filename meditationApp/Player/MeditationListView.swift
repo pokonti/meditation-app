@@ -9,9 +9,11 @@ import SwiftUI
 struct MeditationListView: View {
     let course: MeditationCourse
     @ObservedObject var audioPlayer: AudioPlayerManager
-    @EnvironmentObject var router: AppRouter
     @State private var showPlayer = false
-
+    
+    @EnvironmentObject var router: AppRouter
+    @EnvironmentObject var favoritesVM: FavoritesViewModel
+    
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -21,6 +23,16 @@ struct MeditationListView: View {
                     Image(systemName: "chevron.left").foregroundColor(.primary)
                 }
                 .padding(.leading, 16)
+                
+                Button {
+                    favoritesVM.toggleFavorite(courseID: course.id)
+                } label: {
+                    Image(systemName: favoritesVM.isFavorite(courseID: course.id)
+                          ? "heart.fill" : "heart")
+                        .foregroundColor(.red)
+                }
+                .padding(.horizontal, 16)
+                
                 Spacer()
             }
             .padding(.vertical, 10)

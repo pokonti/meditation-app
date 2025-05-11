@@ -13,8 +13,11 @@ struct MainView: View {
     @ObservedObject var authVM: AuthViewModel
     @ObservedObject var diaryVM: DiaryViewModel
     @ObservedObject var audioPlayer: AudioPlayerManager
-    @EnvironmentObject var router: AppRouter
     @State private var selectedTab = 0
+    
+    @EnvironmentObject var favoritesVM: FavoritesViewModel
+    @EnvironmentObject var router: AppRouter
+   
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -29,8 +32,13 @@ struct MainView: View {
             Text("Search")
                 .tabItem { Image(systemName: "magnifyingglass"); Text("Search") }
                 .tag(1)
-
-            Text("Favorites")
+            
+            FavoritesView(
+                viewModel: viewModel,
+                audioPlayer: audioPlayer
+            )
+            .environmentObject(router)
+            .environmentObject(favoritesVM)
                 .tabItem { Image(systemName: "heart"); Text("Favorites") }
                 .tag(2)
 

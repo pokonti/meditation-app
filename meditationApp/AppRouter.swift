@@ -12,17 +12,20 @@ final class AppRouter: ObservableObject {
     let authVM: AuthViewModel
     let audioPlayer: AudioPlayerManager
     let diaryVM: DiaryViewModel
+    let favoritesVM: FavoritesViewModel
 
     init(
         navController: UINavigationController,
         authVM: AuthViewModel,
         audioPlayer: AudioPlayerManager,
-        diaryVM: DiaryViewModel
+        diaryVM: DiaryViewModel,
+        favoritesVM: FavoritesViewModel
     ) {
         self.navController = navController
         self.authVM       = authVM
         self.audioPlayer  = audioPlayer
         self.diaryVM      = diaryVM
+        self.favoritesVM = favoritesVM
         showLogin()
     }
 
@@ -60,9 +63,11 @@ final class AppRouter: ObservableObject {
             audioPlayer: audioPlayer
         )
         .environmentObject(self)
+        .environmentObject(favoritesVM)
         let vc = UIHostingController(rootView: view)
         navController?.pushViewController(vc, animated: true)
     }
+
 
     func goBack() {
         navController?.popViewController(animated: true)
