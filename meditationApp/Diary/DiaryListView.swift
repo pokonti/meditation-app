@@ -21,7 +21,6 @@ struct DiaryListView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 16) {
-                // Header
                 HStack {
                     Text("How are you feeling today? Share it!")
                         .font(.largeTitle).bold()
@@ -30,7 +29,6 @@ struct DiaryListView: View {
                 .padding(.horizontal)
                 .padding(.top, 16)
 
-                // Weekly mood chart
                 Chart {
                     ForEach(viewModel.weeklyMoodSeries, id: \.date) { point in
                         LineMark(
@@ -75,7 +73,6 @@ struct DiaryListView: View {
                 }
             }
             .overlay(
-                // Floating "+" button
                 Button(action: { showAddSheet = true }) {
                     Image(systemName: "plus")
                         .font(.title2)

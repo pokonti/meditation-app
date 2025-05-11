@@ -18,14 +18,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let windowScene = scene as? UIWindowScene else { return }
         
-        // Инициализируем службы
         let authVM      = AuthViewModel()
         let audioPlayer = AudioPlayerManager()
         let diaryVM     = DiaryViewModel()
         let navController = UINavigationController()
         let favoritesVM = FavoritesViewModel()
         
-        // Создаём AppRouter и стартуем с логина
         let router = AppRouter(
             navController: navController,
             authVM: authVM,
