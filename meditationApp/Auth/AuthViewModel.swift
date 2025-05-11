@@ -9,9 +9,9 @@ import FirebaseAuth
 
 @MainActor
 final class AuthViewModel: ObservableObject {
-    @Published var isLoggedIn: Bool = false
-    @Published var userName: String = ""
-    @Published var errorMessage: String?
+    @Published var isLoggedIn = false
+    @Published var userName = ""
+    @Published var errorMessage: String? = nil
 
     private var handle: AuthStateDidChangeListenerHandle?
 
@@ -29,30 +29,33 @@ final class AuthViewModel: ObservableObject {
     }
 
     func register(name: String, email: String, password: String) async {
+        errorMessage = nil
         do {
-            let result = try await Auth.auth().createUser(withEmail: email, password: password)
+            let result = try await Auth.auth()
+                .createUser(withEmail: email, password: password)
             let changeReq = result.user.createProfileChangeRequest()
             changeReq.displayName = name
             try await changeReq.commitChanges()
-            // AuthState listener автоматически обновит isLoggedIn и userName
+            // state listener will flip isLoggedIn → true
         } catch {
             errorMessage = error.localizedDescription
         }
     }
 
-    func login(email: String, password: String) async {
-        do {
-            _ = try await Auth.auth().signIn(withEmail: email, password: password)
-            // AuthState listener обновит isLoggedIn
-        } catch {
-            errorMessage = error.localizedDescription
+    /// Now this throws on failure instead of swallowing the error
+    func login(email: String, password: String) async throws {
+        // basic local validation
+        guard !email.isEmpty, !password.isEmpty else {
+            throw NSError(domain: "", code: 0,
+                userInfo: [NSLocalizedDescriptionKey: "Email and password cannot be empty"])
         }
+        try await Auth.auth().signIn(withEmail: email, password: password)
+        // on success, state listener will set isLoggedIn = true
     }
 
     func logout() {
         do {
             try Auth.auth().signOut()
-            // AuthState listener сбросит isLoggedIn и userName
         } catch {
             errorMessage = error.localizedDescription
         }

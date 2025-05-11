@@ -10,10 +10,10 @@ import SwiftUI
 struct LoginView: View {
     @ObservedObject var authVM: AuthViewModel
     @EnvironmentObject var router: AppRouter
-
+    
     @State private var email = ""
     @State private var password = ""
-
+    
     var body: some View {
         ZStack {
             LinearGradient(
@@ -25,12 +25,12 @@ struct LoginView: View {
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
-
+            
             VStack(spacing: 32) {
                 Text("Welcome Back")
                     .font(.largeTitle).bold()
                     .foregroundColor(.white)
-
+                
                 VStack(spacing: 16) {
                     TextField("Email", text: $email)
                         .keyboardType(.emailAddress)
@@ -39,47 +39,50 @@ struct LoginView: View {
                         .background(Color.white)
                         .cornerRadius(10)
                         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-
+                    
                     SecureField("Password", text: $password)
                         .padding()
                         .background(Color.white)
                         .cornerRadius(10)
                         .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-
+                    
                     if let error = authVM.errorMessage {
                         Text(error)
                             .foregroundColor(.red)
                             .font(.caption)
                     }
-
-                    Button {
+                    
+                    Button("Log In") {
                         Task {
-                            await authVM.login(email: email, password: password)
-                            if authVM.isLoggedIn {
+                            // 1. Clear any previous error
+                            authVM.errorMessage = nil
+                            
+                            do {
+                                // 2. Try to sign in — this will throw if anything goes wrong
+                                try await authVM.login(email: email, password: password)
+                                // 3. Only on success do we navigate
                                 router.showMain()
+                            } catch {
+                                // 4. Capture and display the error message
+                                authVM.errorMessage = error.localizedDescription
                             }
                         }
-                    } label: {
-                        Text("Log In")
-                            .fontWeight(.semibold)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.white.opacity(0.3))
-                            .cornerRadius(10)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.white.opacity(0.3))
+                    .cornerRadius(10)
+                    .fontWeight(.semibold)
+                    
+                    
+                    Button("Нет аккаунта? Зарегистрироваться") {
+                        router.showRegister()
+                    }
+                    .font(.footnote)
+                    .foregroundColor(.white)
                 }
-                .padding()
-                .background(Color.white.opacity(0.2))
-                .cornerRadius(16)
-                .padding(.horizontal, 24)
-
-                Button("Нет аккаунта? Зарегистрироваться") {
-                    router.showRegister()
-                }
-                .font(.footnote)
-                .foregroundColor(.white)
+                .padding(.vertical, 40)
             }
-            .padding(.vertical, 40)
         }
     }
 }
