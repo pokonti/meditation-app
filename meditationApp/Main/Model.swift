@@ -19,8 +19,14 @@ struct MeditationCourse: Identifiable {
 struct Meditation: Identifiable {
     let id: String
     let title: String
-    let duration: String
+    let duration: TimeInterval 
+    let theme: String
     let audioURL: String
+    let imageURL: String?
+    
+    var durationString: String {   
+        let m = Int(duration) / 60
+        let s = Int(duration) % 60
+        return String(format: "%d:%02d", m, s)
+    }
 }
-
-

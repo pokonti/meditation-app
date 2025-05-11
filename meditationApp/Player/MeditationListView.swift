@@ -6,27 +6,6 @@
 //
 import SwiftUI
 
-struct MeditationRow: View {
-    let meditation: Meditation
-    
-    var body: some View {
-        HStack {
-            Image(systemName: "play.circle.fill")
-                .font(.title2)
-                .foregroundColor(.blue)
-            
-            VStack(alignment: .leading) {
-                Text(meditation.title)
-                    .fontWeight(.medium)
-                Text(meditation.duration)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
-            Spacer()
-        }
-        .padding(.vertical, 8)
-    }
-}
 struct MeditationListView: View {
     let course: MeditationCourse
     @ObservedObject var audioPlayer: AudioPlayerManager
@@ -68,5 +47,26 @@ struct MeditationListView: View {
             }
         }
         .edgesIgnoringSafeArea(.bottom)
+    }
+}
+struct MeditationRow: View {
+    let meditation: Meditation
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "play.circle.fill")
+                .font(.title2)
+                .foregroundColor(.blue)
+            
+            VStack(alignment: .leading) {
+                Text(meditation.title)
+                    .fontWeight(.medium)
+                Text(meditation.durationString)
+                    .font(.caption)
+                    .foregroundColor(.gray)
+            }
+            Spacer()
+        }
+        .padding(.vertical, 8)
     }
 }

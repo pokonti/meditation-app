@@ -40,7 +40,7 @@ final class AppRouter: ObservableObject {
         let vc = UIHostingController(rootView: view)
         navController?.pushViewController(vc, animated: true)
     }
-
+    @MainActor
     func showMain() {
         let view = MainView(
             viewModel: ViewModel(),

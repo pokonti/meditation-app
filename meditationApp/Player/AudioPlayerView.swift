@@ -33,7 +33,7 @@ struct AudioPlayerView: View {
                 get: { Float(audioPlayer.currentTime) },
                 set: { audioPlayer.seek(to: TimeInterval($0)) }
             ), in: 0...Float(max(1, audioPlayer.duration)))
-            .accentColor(Color("#8A8AFF"))
+            .accentColor(.siren)
             
             // Control buttons
             HStack(spacing: 40) {

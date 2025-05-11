@@ -11,7 +11,6 @@ final class DiaryViewModel: ObservableObject {
     @Published private(set) var entries: [DiaryEntry] = []
 
     init() {
-        // Example initial entry
         entries = [
             DiaryEntry(
                 title: "Keremet kun",
