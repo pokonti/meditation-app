@@ -11,19 +11,28 @@ final class AppRouter: ObservableObject {
     private weak var navController: UINavigationController?
     let authVM: AuthViewModel
     let audioPlayer: AudioPlayerManager
+    let searchAudioPlayer: SearchAudioPlayerManager
+
     let diaryVM: DiaryViewModel
+    let favoritesVM: FavoritesViewModel
+
 
     init(
         navController: UINavigationController,
         authVM: AuthViewModel,
         audioPlayer: AudioPlayerManager,
-        diaryVM: DiaryViewModel
+        searchAudioPlayer: SearchAudioPlayerManager,
+        diaryVM: DiaryViewModel,
+        favoritesVM: FavoritesViewModel
+
     ) {
-        self.navController = navController
-        self.authVM       = authVM
-        self.audioPlayer  = audioPlayer
-        self.diaryVM      = diaryVM
-        showLogin()
+        self.navController         = navController
+               self.authVM                = authVM
+               self.audioPlayer           = audioPlayer
+               self.searchAudioPlayer     = searchAudioPlayer
+               self.diaryVM               = diaryVM
+               self.favoritesVM           = favoritesVM
+               showLogin()
     }
 
     func showLogin() {
@@ -48,7 +57,10 @@ final class AppRouter: ObservableObject {
             diaryVM: diaryVM,
             audioPlayer: audioPlayer
         )
-        .environmentObject(self)
+            .environmentObject(self)
+            .environmentObject(favoritesVM)    
+            .environmentObject(authVM)
+
         let vc = UIHostingController(rootView: view)
         navController?.setViewControllers([vc], animated: true)
     }
@@ -61,6 +73,30 @@ final class AppRouter: ObservableObject {
         )
         .environmentObject(self)
         let vc = UIHostingController(rootView: view)
+        navController?.pushViewController(vc, animated: true)
+    }
+    
+//    func showAudioPlayer(for meditation: Meditation) {
+//           let playerView = SearchAudioPlayerView(
+//               meditation: meditation,
+//               player: audioPlayer
+//           )
+//           .environmentObject(self)
+//           .environmentObject(favoritesVM)
+//
+//           let vc = UIHostingController(rootView: playerView)
+//           navController?.pushViewController(vc, animated: true)
+//       }
+    func showSearchAudioPlayer(for meditation: Meditation) {
+        let playerView = SearchAudioPlayerView(
+            meditation: meditation,
+            player: searchAudioPlayer  
+        )
+        .environmentObject(favoritesVM)
+        .environmentObject(authVM)
+        .environmentObject(self)
+
+        let vc = UIHostingController(rootView: playerView)
         navController?.pushViewController(vc, animated: true)
     }
 

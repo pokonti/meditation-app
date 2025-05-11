@@ -13,24 +13,27 @@ struct MainView: View {
     @ObservedObject var authVM: AuthViewModel
     @ObservedObject var diaryVM: DiaryViewModel
     @ObservedObject var audioPlayer: AudioPlayerManager
+
     @EnvironmentObject var router: AppRouter
     @State private var selectedTab = 0
 
     var body: some View {
         TabView(selection: $selectedTab) {
             HomeView(
-                viewModel: viewModel,
-                audioPlayer: audioPlayer,
-                authVM: authVM
+              viewModel: viewModel,
+              audioPlayer: audioPlayer,
+              authVM: authVM
             )
             .tabItem { Image(systemName: "house.fill"); Text("Home") }
             .tag(0)
 
-            Text("Search")
+            SearchView()
+                .environmentObject(router)
                 .tabItem { Image(systemName: "magnifyingglass"); Text("Search") }
                 .tag(1)
 
-            Text("Favorites")
+            FavoritesView()
+                .environmentObject(router)
                 .tabItem { Image(systemName: "heart"); Text("Favorites") }
                 .tag(2)
 

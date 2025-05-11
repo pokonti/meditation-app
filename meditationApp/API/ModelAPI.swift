@@ -22,7 +22,7 @@ struct MeditationDTO: Codable {
     let theme: String
     let drive_id: String
     let image_url: String?
-    let section_id: Int
+    let section_id: Int?
 }
 
 

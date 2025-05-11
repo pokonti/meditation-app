@@ -21,15 +21,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Инициализируем службы
         let authVM      = AuthViewModel()
         let audioPlayer = AudioPlayerManager()
+        let searchAudioPlayer  = SearchAudioPlayerManager()
+
         let diaryVM     = DiaryViewModel()
+        let favsVM = FavoritesViewModel(authVM: authVM)
+
         let navController = UINavigationController()
+
         
         // Создаём AppRouter и стартуем с логина
         let router = AppRouter(
             navController: navController,
             authVM: authVM,
             audioPlayer: audioPlayer,
-            diaryVM: diaryVM
+            searchAudioPlayer: searchAudioPlayer,
+
+            diaryVM: diaryVM,
+            favoritesVM: favsVM
+
         )
         
         // Настраиваем окно
