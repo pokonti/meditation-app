@@ -67,6 +67,16 @@ final class AppRouter: ObservableObject {
         let vc = UIHostingController(rootView: view)
         navController?.pushViewController(vc, animated: true)
     }
+    
+    func showAudioPlayer(for meditation: Meditation) {
+        let playerView = AudioPlayerView(
+            meditation: meditation, player: AudioPlayerManager()
+        )
+        .environmentObject(self)
+
+        let vc = UIHostingController(rootView: playerView)
+        navController?.pushViewController(vc, animated: true)
+    }
 
 
     func goBack() {

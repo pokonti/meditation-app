@@ -41,12 +41,15 @@ struct MeditationListView: View {
             .padding(.vertical, 10)
 
             List {
-                Section(header: Text(course.title).font(.largeTitle).bold().padding(.bottom, 8)) {
+                Section(
+                    header: Text(course.title)
+                        .font(.largeTitle)
+                        .bold()
+                        .padding(.bottom, 8)
+                ) {
                     ForEach(course.meditations) { meditation in
                         Button {
-                            guard let url = URL(string: meditation.audioURL) else { return }
-                            audioPlayer.play(url: url, title: meditation.title)
-                            showPlayer = true
+                            router.showAudioPlayer(for: meditation)
                         } label: {
                             MeditationRow(meditation: meditation)
                         }
@@ -54,17 +57,12 @@ struct MeditationListView: View {
                 }
             }
             .listStyle(PlainListStyle())
-
-            if showPlayer {
-                AudioPlayerView(audioPlayer: audioPlayer)
-                    .transition(.move(edge: .bottom))
-                    .animation(.easeInOut, value: audioPlayer.isPlaying)
-            }
-           
         }
+        .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.bottom)
     }
 }
+
 struct MeditationRow: View {
     let meditation: Meditation
     

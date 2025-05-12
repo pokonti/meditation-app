@@ -49,12 +49,6 @@ struct HomeView: View {
                     }
                     .padding(.horizontal)
                 }
-
-                if showPlayer && audioPlayer.isPlaying {
-                    AudioPlayerView(audioPlayer: audioPlayer)
-                        .transition(.move(edge: .bottom))
-                        .animation(.easeInOut, value: showPlayer)
-                }
             }
             .padding(.vertical)
         }

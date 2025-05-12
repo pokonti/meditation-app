@@ -75,7 +75,7 @@ struct LoginView: View {
                     .fontWeight(.semibold)
                     
                     
-                    Button("Нет аккаунта? Зарегистрироваться") {
+                    Button("Don't have an account? Sign up") {
                         router.showRegister()
                     }
                     .font(.footnote)

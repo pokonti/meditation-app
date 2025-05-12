@@ -2,116 +2,70 @@
 //  AudioPlayerManager.swift
 //  meditationApp
 //
-//  Created by Aknur Seidazym on 05.05.2025.
+//  Created by Амангелди Мадина on 08.05.2025.
 //
+
+
+import Foundation
 import AVFoundation
-import Combine
-import SwiftUI
 
 class AudioPlayerManager: ObservableObject {
-    @Published var isPlaying: Bool = false
+    @Published var isPlaying = false
     @Published var currentTime: TimeInterval = 0
     @Published var duration: TimeInterval = 0
-    @Published var progress: Float = 0
-    @Published var currentTitle: String = ""
-
+    
     private var player: AVPlayer?
-    private var timeObserverToken: Any?
-    private var statusObserver: NSKeyValueObservation?
-
-    init() {
-        setupAudioSession()
-    }
-
-    private func setupAudioSession() {
-        let session = AVAudioSession.sharedInstance()
-        do {
-            try session.setCategory(.playback, mode: .default, options: [])
-            try session.setActive(true)
-        } catch {
-            print("Audio session error:", error)
+    private var timeObserver: Any?
+    
+    func start(urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        player = AVPlayer(url: url)
+        if let asset = player?.currentItem?.asset {
+            duration = asset.duration.seconds
         }
-    }
-
-    /// Stream & play from any remote or local URL
-    func play(url: URL, title: String) {
-        // Tear down old player
-        stopObservers()
-
-        currentTitle = title
-        let item = AVPlayerItem(url: url)
-        player = AVPlayer(playerItem: item)
-
-        // Observe when the duration is loaded
-        statusObserver = item.observe(\.status, options: [.new, .initial]) { [weak self] item, _ in
-            guard item.status == .readyToPlay else { return }
-            let secs = CMTimeGetSeconds(item.asset.duration)
-            DispatchQueue.main.async {
-                self?.duration = secs.isFinite ? secs : 0
-            }
-        }
-
-        // Add periodic time observer to update currentTime & progress
-        let interval = CMTime(seconds: 0.1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-        timeObserverToken = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
-            guard let self = self else { return }
-            let secs = CMTimeGetSeconds(time)
-            self.currentTime = secs
-            if self.duration > 0 {
-                self.progress = Float(secs / self.duration)
-            }
-        }
-
-        // Observe end-of-playback
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(itemDidFinishPlaying),
-            name: .AVPlayerItemDidPlayToEndTime,
-            object: item
-        )
-
-        // Start playback
+        addObserver()
         player?.play()
         isPlaying = true
     }
-
-    @objc private func itemDidFinishPlaying(_ notification: Notification) {
-        isPlaying = false
-        seek(to: 0)
-    }
-
-    func togglePlayPause() {
-        guard let player = player else { return }
+    
+    func togglePlayPause(urlString: String) {
+        guard let p = player else {
+            start(urlString: urlString)
+            return
+        }
         if isPlaying {
-            player.pause()
+            p.pause()
+            isPlaying = false
         } else {
-            player.play()
+            p.play()
+            isPlaying = true
         }
-        isPlaying.toggle()
     }
-
-    func stop() {
-        player?.pause()
-        seek(to: 0)
-        isPlaying = false
+    
+    func rewind15() {
+        guard let p = player else { return }
+        let t = max(p.currentTime().seconds - 15, 0)
+        p.seek(to: CMTime(seconds: t, preferredTimescale: 1))
     }
-
-    func seek(to time: TimeInterval) {
-        let cmTime = CMTime(seconds: time, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-        player?.seek(to: cmTime)
+    func forward15() {
+        guard let p = player else { return }
+        let t = min(p.currentTime().seconds + 15, duration)
+        p.seek(to: CMTime(seconds: t, preferredTimescale: 1))
     }
-
-    private func stopObservers() {
-        if let token = timeObserverToken {
-            player?.removeTimeObserver(token)
-            timeObserverToken = nil
+    
+    private func addObserver() {
+        guard let p = player else { return }
+        timeObserver = p.addPeriodicTimeObserver(
+            forInterval: CMTime(seconds: 1, preferredTimescale: 1),
+            queue: .main
+        ) { [weak self] t in
+            self?.currentTime = t.seconds
         }
-        statusObserver?.invalidate()
-        statusObserver = nil
-        NotificationCenter.default.removeObserver(self)
     }
-
+    
     deinit {
-        stopObservers()
+        if let obs = timeObserver {
+            player?.removeTimeObserver(obs)
+        }
     }
 }
