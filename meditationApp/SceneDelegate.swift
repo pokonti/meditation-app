@@ -31,17 +31,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             diaryVM: diaryVM,
             favoritesVM: favoritesVM
         )
-        let main = MainView(
-            viewModel: ViewModel(),
-            authVM: authVM,
-            diaryVM: diaryVM,
-            audioPlayer: audioPlayer
-        )
-        .environmentObject(router)
-        .environmentObject(favoritesVM)
-        
-        let hosting = UIHostingController(rootView: main)
-        navController.viewControllers = [hosting]
         
         let window = UIWindow(windowScene: windowScene)
         window.rootViewController = navController
