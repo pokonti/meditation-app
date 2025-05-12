@@ -29,7 +29,8 @@ struct MainView: View {
             .tabItem { Image(systemName: "house.fill"); Text("Home") }
             .tag(0)
 
-            Text("Search")
+            SearchView()
+                .environmentObject(router)
                 .tabItem { Image(systemName: "magnifyingglass"); Text("Search") }
                 .tag(1)
             
