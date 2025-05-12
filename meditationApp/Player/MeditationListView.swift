@@ -29,11 +29,7 @@ struct MeditationListView: View {
                } label: {
                    Image(systemName: favoritesVM.isFavorite(courseID: course.id) ? "heart.fill" : "heart")
                        .font(.title2)
-                       .foregroundColor(.white)
                        .padding()
-                       .background(.siren)
-                       .clipShape(Circle())
-                       .shadow(radius: 1)
                }
                .padding(.trailing, 16)
                 
