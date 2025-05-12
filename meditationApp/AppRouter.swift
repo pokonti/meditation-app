@@ -52,6 +52,7 @@ final class AppRouter: ObservableObject {
             audioPlayer: audioPlayer
         )
         .environmentObject(self)
+        .environmentObject(favoritesVM)
         let vc = UIHostingController(rootView: view)
         navController?.setViewControllers([vc], animated: true)
     }

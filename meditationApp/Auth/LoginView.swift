@@ -10,78 +10,103 @@ import SwiftUI
 struct LoginView: View {
     @ObservedObject var authVM: AuthViewModel
     @EnvironmentObject var router: AppRouter
-    
+
     @State private var email = ""
     @State private var password = ""
-    
+
+    // MARK: — Цветовая палитра
+    private let bgGradientStart = Color(red: 0.95, green: 0.97, blue: 1.0)
+    private let bgGradientEnd   = Color(red: 0.85, green: 0.76, blue: 0.98)
+    private let accentViolet    = Color(red: 0.65, green: 0.49, blue: 0.98)
+
     var body: some View {
         ZStack {
             LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(red: 0.60, green: 0.15, blue: 0.85),
-                    Color(red: 0.75, green: 0.40, blue: 0.90)
-                ]),
+                gradient: Gradient(colors: [bgGradientStart, bgGradientEnd]),
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
-            
+
             VStack(spacing: 32) {
-                Text("Welcome Back")
-                    .font(.largeTitle).bold()
-                    .foregroundColor(.white)
-                
+                // Logo + app name
+                HStack(spacing: 8) {
+                    Text("Tynys")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(accentViolet)
+                    Image("Logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 40, height: 40)
+                    Text("Ber")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(accentViolet)
+                }
+                .padding(.horizontal, 24)
+
                 VStack(spacing: 16) {
+                    Text("Login")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(accentViolet)
+
                     TextField("Email", text: $email)
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-                    
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+
                     SecureField("Password", text: $password)
                         .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-                    
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+
                     if let error = authVM.errorMessage {
                         Text(error)
                             .foregroundColor(.red)
                             .font(.caption)
                     }
-                    
-                    Button("Log In") {
+
+                    Button {
                         Task {
-                            // 1. Clear any previous error
                             authVM.errorMessage = nil
-                            
                             do {
-                                // 2. Try to sign in — this will throw if anything goes wrong
                                 try await authVM.login(email: email, password: password)
-                                // 3. Only on success do we navigate
                                 router.showMain()
                             } catch {
-                                // 4. Capture and display the error message
                                 authVM.errorMessage = error.localizedDescription
                             }
                         }
+                    } label: {
+                        Text("Log In")
+                            .fontWeight(.semibold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(accentViolet)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.white.opacity(0.3))
-                    .cornerRadius(10)
-                    .fontWeight(.semibold)
-                    
-                    
+
                     Button("Don't have an account? Sign up") {
                         router.showRegister()
                     }
                     .font(.footnote)
-                    .foregroundColor(.white)
+                    .foregroundColor(accentViolet.opacity(0.8))
                 }
-                .padding(.vertical, 40)
+                .padding()
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+                .padding(.horizontal, 24)
+            }
+            .padding(.vertical, 40)
+        }
+        .onChange(of: authVM.isLoggedIn) { loggedIn in
+            if loggedIn {
+                router.showMain()
             }
         }
     }
