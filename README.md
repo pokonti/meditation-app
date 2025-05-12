@@ -78,4 +78,5 @@ Each section contains metadata about a meditation course:
   "section_id": 1
 }
 ```
-
+### Video Link
+https://youtube.com/shorts/9huBKIk_fG8?feature=share 
