@@ -14,8 +14,10 @@
             filePath = "meditationApp/Main/HomeView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "162"
-            endingLineNumber = "162">
+            startingLineNumber = "181"
+            endingLineNumber = "181"
+            landmarkName = "RecommendedCard"
+            landmarkType = "14">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

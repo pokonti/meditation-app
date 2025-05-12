@@ -14,46 +14,72 @@ struct HomeView: View {
     @State private var showPlayer = false
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text("Good Morning, \(authVM.userName)") 
-                            .font(.title).fontWeight(.semibold)
-                        Text("We wish you a good day")
-                            .font(.subheadline).foregroundColor(.cyan)
-                    }
+        Group{
+            if viewModel.isLoading {
+                VStack {
+                    Spacer()
+                    ProgressView("Loading courses...")
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .padding()
                     Spacer()
                 }
-                .padding(.horizontal)
-
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                    ForEach(viewModel.courses.prefix(4)) { course in
-                        CourseCard(course: course)
-                            .onTapGesture {
-                                router.showMeditationList(for: course)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Good Morning, \(authVM.userName)")
+                                    .font(.title).fontWeight(.semibold)
+                                Text("We wish you a good day")
+                                    .font(.subheadline).foregroundColor(.cyan)
                             }
-                    }
-                }
-                .padding(.horizontal)
-                
-                    
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 16) {
-                        ForEach(viewModel.courses.suffix(3)) { course in
-                            RecommendedCard(course: course)
-                                .onTapGesture {
-                                    router.showMeditationList(for: course)
+                            Spacer()
+                        }
+                        .padding(.horizontal)
+
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                            ForEach(viewModel.courses.prefix(4)) { course in
+                                CourseCard(course: course)
+                                    .onTapGesture {
+                                        router.showMeditationList(for: course)
+                                    }
+                            }
+                        }
+                        .padding(.horizontal)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Recommended courses")
+                                .font(.title3)
+                                .bold()
+                                .padding(.horizontal)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 15) {
+                                    ForEach(viewModel.courses.suffix(3)) { course in
+                                        RecommendedCard(course: course)
+                                            .onTapGesture {
+                                                router.showMeditationList(for: course)
+                                            }
+                                    }
                                 }
+                                .padding(.horizontal)
+                            }
+                        }
+                        
+                    }
+                    .padding(.vertical)
+                }
+                .navigationBarHidden(true)
+                .onAppear {
+                    if viewModel.courses.isEmpty {
+                        Task { await viewModel.loadSections()
                         }
                     }
-                    .padding(.horizontal)
                 }
             }
-            .padding(.vertical)
+            
         }
-        .navigationBarHidden(true)
-        .onAppear { showPlayer = audioPlayer.isPlaying }
+        
     }
 }
 
@@ -95,6 +121,7 @@ struct CourseCard: View {
     }
 }
 
+
 struct RecommendedCard: View {
     let course: MeditationCourse
     
@@ -103,7 +130,7 @@ struct RecommendedCard: View {
             course.image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(width: 180, height: 220)
+                .frame(width: 180, height: 100)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .overlay(
                     LinearGradient(
@@ -147,7 +174,9 @@ struct RecommendedCard: View {
             }
             .padding(14)
         }
-        .frame(width: 180, height: 220)
+        .frame(width: 180, height: 100)
+    
+       
     }
 }
 

@@ -23,14 +23,14 @@ final class NotificationManager {
         }
     }
 
-    /// Для теста: каждое 30 секунд
+  
     func scheduleTestReminder() {
         let content = UNMutableNotificationContent()
         content.title = "Diary Reminder"
         content.body  = "Don't forget to write in your diary!"
         content.sound = .default
 
-        // Повторяющийся триггер каждые 30 секунд
+       
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
         let request = UNNotificationRequest(
             identifier: "diary_test_reminder",
